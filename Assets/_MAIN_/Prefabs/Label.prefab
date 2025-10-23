@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 3466044969623030544}
   - component: {fileID: 5381177839864164299}
   m_Layer: 5
-  m_Name: Quantum Superposition Cube Label
+  m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

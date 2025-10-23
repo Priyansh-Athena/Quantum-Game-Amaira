@@ -11,11 +11,15 @@ namespace QuantumSuperposition
 
     public class QuantumCubeManager : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] QuantumFace[] allFaces;
         [SerializeField] CanvasGroup instructionsCG, instructionsNextBtnCG, observationCG, completedCG;
         [SerializeField] TMP_Text instructionTitle, instructionDescription, observationTxt;
         [SerializeField] Button instructionsNextBtn;
         [SerializeField] LookAtOrbitalRotation cameraLook;
+
+        [Header("Events")]
+        public UnityEvent OnLevelComplete;
 
         QuantumFace selectedFace;
 
@@ -130,6 +134,9 @@ namespace QuantumSuperposition
             yield return new WaitForSeconds(0.5f);
 
             Fade(completedCG, 1f, 0.5f);
+            yield return new WaitForSeconds(2f);
+
+            OnLevelComplete.Invoke();
         }
 
         private IEnumerator ShowInstructionsCoroutine()

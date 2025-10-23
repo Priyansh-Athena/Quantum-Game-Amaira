@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class LookAtOrbitalRotation : MonoBehaviour
 {
@@ -35,6 +36,9 @@ public class LookAtOrbitalRotation : MonoBehaviour
 
     void Update()
     {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
         // Handle keyboard input (Horizontal and Vertical axis)
         HandleKeyboardInput();
 
