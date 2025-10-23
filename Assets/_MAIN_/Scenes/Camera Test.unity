@@ -711,7 +711,7 @@ MonoBehaviour:
   m_SplineSettings:
     Spline: {fileID: 95641793}
     Position: 0
-    Units: 1
+    Units: 0
   SplineOffset: {x: 0, y: 0, z: 0}
   CameraRotation: 2
   Damping:
