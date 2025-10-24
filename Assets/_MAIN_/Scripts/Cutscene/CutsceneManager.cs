@@ -1,13 +1,21 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Splines;
+using UnityEngine.UI;
 
 public class CutsceneManager : MonoBehaviour
 {
     [Header("References")]
     public CinemachineSplineDolly dolly;
+    public CanvasGroup startGameCG, endGameCG;
+    public Image audioBtnImage;
+    public Sprite muteSprite, unmuteSprite;
+    public AudioSource audioSource;
 
     [Header("Settings")]
     public float moveSpeed = 0.2f;
@@ -20,15 +28,13 @@ public class CutsceneManager : MonoBehaviour
     public UnityEvent OnReachedEntanglement;
     public UnityEvent OnReachedTunneling;
 
-    private bool isPlaying = false;
+    private bool isPlaying = false, isMute = false;
     private int idx = 1;
 
     void Start()
     {
         if (dolly == null)
             dolly = GetComponent<CinemachineSplineDolly>();
-
-        StartDolly(dolly.Spline);
     }
 
     void Update()
@@ -46,6 +52,45 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
+    public void MusicToggle()
+    {
+        isMute = !isMute;
+
+        if(isMute)
+        {
+            audioSource.Pause();
+            audioBtnImage.sprite = muteSprite;
+        }
+        else
+        {
+            audioSource.Play();
+            audioBtnImage.sprite = unmuteSprite;
+        }
+    }
+
+    public void StartGame()
+    {
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    private IEnumerator StartGameCoroutine()
+    {
+        startGameCG.blocksRaycasts = false;
+        Fade(startGameCG, 0f, 0.5f);
+        yield return new WaitForSeconds(0.5f);
+
+        StartDolly(dolly.Spline);
+    }
+
+    public void ExitGame()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
     public void StartDolly(SplineContainer splineContainer)
     {
         StartCoroutine(StartDollyCoroutine(splineContainer));
@@ -53,7 +98,6 @@ public class CutsceneManager : MonoBehaviour
 
     private IEnumerator StartDollyCoroutine(SplineContainer splineContainer)
     {
-        yield return new WaitForSeconds(2f);
         switch (idx)
         {
             case 1:
@@ -81,7 +125,7 @@ public class CutsceneManager : MonoBehaviour
 
     private IEnumerator OnCutsceneEndCutscene()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         switch (idx)
         {
@@ -94,8 +138,24 @@ public class CutsceneManager : MonoBehaviour
             case 3:
                 OnReachedTunneling.Invoke();
                 break;
+            case 4:
+                StartCoroutine(EndGameCoroutine());
+                break;
         }
 
         idx++;
+    }
+
+    private IEnumerator EndGameCoroutine()
+    {
+        Fade(endGameCG, 1f, 0.5f);
+        yield return new WaitForSeconds(0.5f);
+
+        endGameCG.blocksRaycasts = true;
+    }
+
+    private void Fade(CanvasGroup cg, float alpha, float duration)
+    {
+        cg.DOFade(alpha, duration);
     }
 }
